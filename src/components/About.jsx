@@ -1,0 +1,77 @@
+import React, { useState } from "react";
+
+const About = () => {
+  const [myStyle, setMyStyle] = useState({
+    color: "black",
+    background: "white",
+  });
+
+  const [btnText, setBtnText] = useState("Enable Dark Mode");
+
+  const toggleStyle = () => {
+    if (myStyle.color === "black") {
+      setMyStyle({
+        color: "white",
+        background: "black",
+        border: "1px solid white",
+      });
+      setBtnText("Disable Dark Mode");
+    } else {
+      setMyStyle({
+        color: "black",
+        background: "white",
+      });
+      setBtnText("Enable Dark Mode");
+    }
+  };
+
+  return (
+    <div className="container" style={myStyle}>
+      <h2 className="mx-2">About Us</h2>
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button
+              class="accordion-button"
+              type="button"
+              style={myStyle}
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="true"
+              aria-controls="collapseOne"
+            >
+              Accordion Item #1
+            </button>
+          </h2>
+          <div
+            id="collapseOne"
+            class="accordion-collapse collapse show"
+            aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body" style={myStyle}>
+              <strong>This is the first item's accordion body.</strong> It is
+              shown by default, until the collapse plugin adds the appropriate
+              classes that we use to style each element. These classes control
+              the overall appearance, as well as the showing and hiding via CSS
+              transitions. You can modify any of this with custom CSS or
+              overriding our default variables. It's also worth noting that just
+              about any HTML can go within the <code>.accordion-body</code>,
+              though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="container">
+        <button
+          onClick={toggleStyle}
+          type="button"
+          className="btn btn-outline-dark my-3"
+        >
+          {btnText}
+        </button>
+      </div>
+    </div>
+  );
+};
+export default About;
