@@ -1,22 +1,15 @@
 import AuthLayout from "./layout/AuthLayout";
 import HomeLayout from "./layout/HomeLayout";
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
 import Navbar from "./components/Navbar";
+import { useAuth } from "./context/AuthContext";
 
 const App = () => {
-  // const { isAuthenticated } = useAuth();
-
-  const isAuthenticated = false;
-
-  // Handler for search queries for navbar
-  const handleSearch = (query) => {
-    console.log("Searching for:", query);
-  };
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
-      {isAuthenticated && <Navbar onSearch={handleSearch} />}
+      {isAuthenticated && <Navbar />}
       <Routes>
         <Route
           exact

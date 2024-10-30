@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import { baseURL } from "../../constant/data";
 
 const Register = () => {
-  const { isAuthenticated, login } = useAuth();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -11,50 +13,105 @@ const Register = () => {
     authType: "email",
   });
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
-      // API call to register
-      // Example: const response = await api.post('/register', formData);
-      // login(response.data.user, response.data.token);
+      const response = await axios.post(`${baseURL}/auth/register`, formData);
+      const { data, token } = response.data;
+
+      login(data, token);
     } catch (err) {
-      setError(err.message);
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <h2>Register</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          name="firstName"
-          placeholder="First Name"
-          onChange={handleChange}
-        />
-        <input
-          name="lastName"
-          placeholder="Last Name"
-          onChange={handleChange}
-        />
-        <input name="email" placeholder="Email" onChange={handleChange} />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
-        <select name="authType" onChange={handleChange}>
-          <option value="email">Email</option>
-          <option value="google">Google</option>
-          <option value="apple">Apple</option>
-        </select>
-        <button type="submit">Register</button>
-      </form>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          Register
+        </h2>
+
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <input
+              name="firstName"
+              placeholder="First Name"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <input
+              name="lastName"
+              placeholder="Last Name"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <select
+              name="authType"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="email">Email</option>
+              <option value="google">Google</option>
+              <option value="apple">Apple</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 text-white font-bold rounded-md transition duration-200 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
