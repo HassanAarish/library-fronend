@@ -27,10 +27,14 @@ const Login = () => {
     try {
       const response = await axios.post(`${baseURL}/auth/login`, formData);
       const { data, token } = response.data;
-      console.log("🚀 ~ handleSubmit ~ response:", response.data);
-      login(data, token);
-      navigate("/home");
+
+      if (response.data.success) {
+        alert("Logged in successfully");
+        login(data, token);
+        navigate("/home");
+      }
     } catch (err) {
+      alert("Invalid email or password");
       setError("Invalid email or password");
     } finally {
       setLoading(false);
@@ -98,11 +102,18 @@ const Login = () => {
             <label className="flex items-center">
               <input type="checkbox" className="mr-1" /> Remember me
             </label>
-            <a href="#" className="text-blue-500 hover:underline">
+            <a href="/signup" className="text-blue-500 hover:underline">
+              Sign Up
+            </a>
+          </div>
+          <div className="flex items-center justify-end text-sm text-gray-700">
+            <a
+              href="/forgot-password"
+              className="text-blue-500 hover:underline"
+            >
               Forgot Password?
             </a>
           </div>
-
           <button
             type="submit"
             disabled={loading}
