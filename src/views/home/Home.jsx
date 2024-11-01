@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { baseURL } from "../../constant/data";
+import { CartContext } from "../../context/CartContext";
 
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { addToCart } = useContext(CartContext);
 
-  // Fetch books data from the API
   useEffect(() => {
     const fetchBooks = async () => {
       setLoading(true);
@@ -38,7 +39,21 @@ const Home = () => {
               {book.title}
             </h3>
             <p className="text-gray-700">Author: {book.author}</p>
-            <p className="text-gray-600">Published: {book.publishedDate}</p>
+            <p className="text-gray-600">
+              Published:{" "}
+              {book.createdAt
+                ? new Date(book.createdAt).toLocaleDateString()
+                : "Not Available"}
+            </p>
+            <p className="text-gray-800 font-bold mt-2">
+              Price: ${book.price.toFixed(2)}
+            </p>
+            <button
+              onClick={() => addToCart(book)}
+              className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700"
+            >
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>

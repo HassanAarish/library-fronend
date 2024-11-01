@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { FaShoppingCart } from "react-icons/fa";
+import { CartContext } from "../context/CartContext"; // Import CartContext
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { logout } = useContext(AuthContext);
+  const { cartItemCount } = useContext(CartContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -25,8 +27,6 @@ const Navbar = () => {
     logout();
     navigate("/login");
   };
-
-  const cartItemCount = 3;
 
   return (
     <nav className="bg-blue-600 text-white p-4 shadow-lg">

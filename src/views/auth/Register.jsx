@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 import { baseURL } from "../../constant/data";
+import { FaGoogle, FaApple, FaEnvelope } from "react-icons/fa";
 
 const Register = () => {
-  const { login } = useAuth();
+  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     password: "",
     authType: "email",
@@ -38,6 +38,18 @@ const Register = () => {
     }
   };
 
+  // Choose icon based on authType
+  const getAuthIcon = () => {
+    switch (formData.authType) {
+      case "google":
+        return <FaGoogle className="text-2xl text-red-500" />;
+      case "apple":
+        return <FaApple className="text-2xl text-gray-800" />;
+      default:
+        return <FaEnvelope className="text-2xl text-blue-500" />;
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
@@ -48,19 +60,11 @@ const Register = () => {
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div></div>
           <div>
             <input
-              name="firstName"
-              placeholder="First Name"
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <input
-              name="lastName"
-              placeholder="Last Name"
+              name="name"
+              placeholder="Name"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -86,7 +90,8 @@ const Register = () => {
               required
             />
           </div>
-          <div>
+          <div className="flex items-center space-x-2">
+            {getAuthIcon()}
             <select
               name="authType"
               onChange={handleChange}

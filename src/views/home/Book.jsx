@@ -40,8 +40,9 @@ const Books = () => {
     setLoading(true);
     try {
       const response = await axios.post(`${baseURL}/book/search`, {
-        input: searchInput,
+        params: { input: searchInput }, //input: searchInput,
       });
+      console.log("🚀 ~ handleSearch ~ response:", response);
       setBooks(response.data.books);
     } catch (error) {
       console.error("Error searching for books:", error);
@@ -52,7 +53,7 @@ const Books = () => {
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
-      <h1 className="text-3xl font-semibold text-center mb-6">
+      <h1 className="text-3xl font-semibold text-center text-blue-600 mb-6">
         Available Books
       </h1>
 
@@ -85,12 +86,17 @@ const Books = () => {
         ) : (
           books.map((book) => (
             <div
-              key={book.id}
+              key={book._id}
               className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
             >
               <h2 className="text-lg font-semibold">{book.title}</h2>
               <p className="text-gray-600">Author: {book.author}</p>
-              <p className="text-gray-500">Published: {book.publishedDate}</p>
+              <p className="text-gray-500">
+                Published:
+                {book.createdAt
+                  ? new Date(book.createdAt).toLocaleDateString()
+                  : "Not Available"}
+              </p>
               <p className="text-gray-500">
                 Category: {book.category.join(", ")}
               </p>
