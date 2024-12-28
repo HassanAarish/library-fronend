@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { baseURL } from "../../constant/data";
-import axios from "axios";
-import { useContext } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,21 +23,12 @@ const Login = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    try {
-      const response = await axios.post(`${baseURL}/auth/login`, formData);
-      const { data, token } = response.data;
-
-      if (response.data.success) {
-        alert("Logged in successfully");
-        login(data, token);
-        navigate("/home");
-      }
-    } catch (err) {
-      alert("Invalid email or password");
-      setError("Invalid email or password");
-    } finally {
-      setLoading(false);
+    const result = await login(formData);
+    if (!result.success) {
+      setError(result);
+      toast.error(result);
     }
+    setLoading(false);
   };
 
   return (
@@ -95,7 +84,7 @@ const Login = () => {
               className="top-5 absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? <FaEye /> : <FaEyeSlash />}
             </span>
           </div>
 
@@ -103,17 +92,17 @@ const Login = () => {
             <label className="flex items-center">
               <input type="checkbox" className="mr-1" /> Remember me
             </label>
-            <a href="/signup" className="text-blue-500 hover:underline">
+            <Link to="/signup" className="text-blue-500 hover:underline">
               Sign Up
-            </a>
+            </Link>
           </div>
           <div className="flex items-center justify-end text-sm text-gray-700">
-            <a
-              href="/forgot-password"
+            <Link
+              to="/forgot-password"
               className="text-blue-500 hover:underline"
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
           <button
             type="submit"

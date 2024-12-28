@@ -1,19 +1,21 @@
-import React, { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import axios from "axios";
-import { baseURL } from "../../constant/data";
+import React, { useState } from "react";
 import { FaGoogle, FaApple, FaEnvelope } from "react-icons/fa";
+import { register } from "../../API/Post";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
-  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    authType: "email",
+    authType: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,14 +27,19 @@ const Register = () => {
     setError(null);
 
     try {
-      const response = await axios.post(`${baseURL}/auth/register`, formData);
-      const { data, token } = response.data;
+      // Call the registerUser API function
+      const response = await register(formData);
 
-      login(data, token);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Registration failed. Please try again."
-      );
+      if (response.success) {
+        toast.success(
+          response?.message ||
+            "Registration successful. Please verify your email."
+        );
+        navigate("/verify-code");
+      }
+    } catch (error) {
+      setError(error?.message || "Registration failed. Please try again.");
+      toast.error(error?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -41,6 +48,8 @@ const Register = () => {
   // Choose icon based on authType
   const getAuthIcon = () => {
     switch (formData.authType) {
+      case "":
+        return null;
       case "google":
         return <FaGoogle className="text-2xl text-red-500" />;
       case "apple":
@@ -59,9 +68,11 @@ const Register = () => {
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div></div>
-          <div>
+        <form
+          onSubmit={handleSubmit}
+          className="w-full flex flex-col space-y-4"
+        >
+          <div className="w-full">
             <input
               name="name"
               placeholder="Name"
@@ -70,7 +81,7 @@ const Register = () => {
               required
             />
           </div>
-          <div>
+          <div className="w-full">
             <input
               name="email"
               type="email"
@@ -80,28 +91,36 @@ const Register = () => {
               required
             />
           </div>
-          <div>
+          <div className="w-full relative">
             <input
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full text-white px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            <span
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
+
           <div className="flex items-center space-x-2">
-            {getAuthIcon()}
             <select
               name="authType"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
+              <option value="">Select Authentication</option>
               <option value="email">Email</option>
               <option value="google">Google</option>
               <option value="apple">Apple</option>
             </select>
+            {getAuthIcon()}
           </div>
 
           <button

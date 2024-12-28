@@ -17,7 +17,6 @@ const HomeLayout = () => {
       <Route exact path="/book" element={<Books />} />
       <Route exact path="/cart" element={<Cart />} />
       <Route exact path="/checkout" element={<Checkout />} />
-      <Route exact path="/book" element={<Books />} />
     </Routes>
   );
 };

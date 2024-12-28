@@ -22,7 +22,7 @@ const App = () => {
         {/* Try Again Button */}
         <button
           className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors"
-          onClick={() => window.location.reload()}
+          onClick={() => window?.location?.reload()}
         >
           Try Again
         </button>

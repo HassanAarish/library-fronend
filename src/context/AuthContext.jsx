@@ -1,8 +1,13 @@
-import { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { POST } from "../API/Post";
+import { baseURL } from "../constant/data";
+import { toast } from "react-toastify";
 
+// Create the AuthContext
 export const AuthContext = createContext();
 
+// Provide AuthContext to the app
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
@@ -13,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = JSON.parse(localStorage.getItem("user"));
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(storedUser);
@@ -20,17 +26,35 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Function to handle login (updates state and localStorage)
-  const login = (userData, authToken) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-    setToken(authToken);
-    localStorage.setItem("token", authToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-    navigate("/home");
+  // Login method (API call + state update)
+  const login = async (formData) => {
+    try {
+      const response = await POST(`${baseURL}/auth/login`, formData);
+      const { data, token } = response;
+
+      if (response.success) {
+        setIsAuthenticated(true);
+        setUser(data);
+        setToken(token);
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(data));
+
+        navigate("/home");
+        toast.success("Logged in successfully");
+        return { success: true };
+      }
+
+      if (!response.success) {
+        console.log("🚀 ~ login ~ response2:", response);
+        return response;
+      }
+    } catch (error) {
+      return error?.data?.error || "Failed to login. Please try again.";
+    }
   };
 
-  // Function to handle logout (clears state and localStorage)
+  // Logout method (clear state and localStorage)
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
@@ -38,21 +62,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
+    toast.success("Logged out successfully");
   };
 
-  // Check if redirected back from social login with token
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromRedirect = urlParams.get("token");
-    const userFromRedirect = urlParams.get("user");
-
-    if (tokenFromRedirect && userFromRedirect) {
-      const userData = JSON.parse(decodeURIComponent(userFromRedirect));
-      login(userData, tokenFromRedirect);
-      navigate("/home");
-    }
-  }, [navigate]);
-
+  // Context value
   const value = {
     isAuthenticated,
     user,
@@ -62,4 +75,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
 };

@@ -1,16 +1,46 @@
 import React, { useState } from "react";
+import { verifyOTP } from "../../API/Post";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const VerifyOtp = () => {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    otp: "",
+  });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     try {
-      // API call to verify OTP
-    } catch (err) {
-      setError(err.message);
+      // Call the OTP verification API
+      const response = await verifyOTP(formData);
+      if (response?.success) {
+        toast.success(
+          response?.message ||
+            "OTP verified successfully. Please login to continue !"
+        );
+        navigate("/login");
+      } else {
+        setError(response?.message);
+        toast.error(response?.message);
+      }
+    } catch (error) {
+      toast.error(error?.data?.error);
+      setError(error?.data?.error || "Failed to verify OTP. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,8 +59,8 @@ const VerifyOtp = () => {
               name="email"
               type="email"
               placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -40,17 +70,22 @@ const VerifyOtp = () => {
               name="otp"
               type="text"
               placeholder="OTP Code"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              value={formData.otp}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={loading}
+            className={`w-full py-2 text-white font-bold rounded-md transition duration-200 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Verify
+            {loading ? "Verifying..." : "Verify"}
           </button>
         </form>
       </div>
