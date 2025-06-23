@@ -1,46 +1,49 @@
-import AuthLayout from "./layout/AuthLayout";
-import HomeLayout from "./layout/HomeLayout";
-import { Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import { AuthContext } from "./context/AuthContext";
-import useNetworkStatus from "./components/NetworkStatus";
-import { useContext } from "react";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./AppRoutes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Flip, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const App = () => {
-  const { isAuthenticated } = useContext(AuthContext);
-  const { isOnline } = useNetworkStatus();
+const queryClient = new QueryClient();
 
-  if (!isOnline) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-gray-800 text-center">
-        {/* Dinosaur Emoji with Bounce Animation */}
-        <div className="text-9xl mb-4 animate-bounce">🦖</div>
-        <div className="text-xl font-semibold mb-4">
-          You are offline. Please check your internet connection.
-        </div>
-
-        {/* Try Again Button */}
-        <button
-          className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors"
-          onClick={() => window?.location?.reload()}
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
+function App() {
   return (
-    <>
-      {isAuthenticated && <Navbar />}
-      <Routes>
-        <Route
-          exact
-          path="/*"
-          element={isAuthenticated ? <HomeLayout /> : <AuthLayout />}
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ToastContainer />
+        <AppRoutes />
+        <ToastContainer
+          position="top-right"
+          autoClose={2500}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          transition={Flip}
+          toastClassName={() =>
+            "relative flex items-center text-white font-outfit text-sm md:text-base px-4 py-3 rounded-lg gap-x-2 shadow-lg border border-white/10 bg-primary"
+          }
+          bodyClassName={() => "flex items-center gap-3"}
+          toastStyle={{
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          }}
+          closeButton={({ closeToast }) => (
+            <button
+              onClick={closeToast}
+              className="text-white cursor-pointer hover:text-red-200 transition duration-200 text-lg ml-auto"
+            >
+              ✖
+            </button>
+          )}
         />
-      </Routes>
-    </>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
-};
+}
 
 export default App;
