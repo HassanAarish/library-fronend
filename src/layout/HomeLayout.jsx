@@ -10,9 +10,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 const HomeLayout = () => {
   return (
     <Routes>
-      {/* <Route exact path="/*" element={<Navigate to={"/home"} replace />} />
-      <Route exact path="/home" element={<Home />} />
-      <Route exact path="/about" element={<About />} />
+      <Route exact path="/*" element={<Navigate to={"/home"} replace />} />
+      {/* <Route exact path="/home" element={<Home />} /> */}
+      {/* <Route exact path="/about" element={<About />} />
       <Route exact path="/profile" element={<Profile />} />
       <Route exact path="/book" element={<Books />} />
       <Route exact path="/cart" element={<Cart />} />

@@ -1,15 +1,21 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AuthLayout from "@/layout/AuthLayout";
 import HomeLayout from "@/layout/HomeLayout";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/AuthContext";
+import { SplashScreen } from "@/components/index";
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, splashLoading } = useAuthContext();
+
+  if (splashLoading) {
+    return <SplashScreen />;
+  }
+
   return (
     <Routes>
       <Route
         exact
-        path="/"
+        path="/*"
         element={isAuthenticated ? <HomeLayout /> : <AuthLayout />}
       />
       {/* <Route path="/auth/*" element={<AuthLayout />} />

@@ -1,11 +1,19 @@
 import axios from "axios";
 import createAuthApi from "./authRoutes.js";
-import userApi from "./userRoutes.js";
-import { baseURL } from "@/constants/data.js";
-import orderApi from "./orderRoutes.js";
-import createFaqApi from "./faqRoutes.js";
-import createBlogApi from "./blogRoutes.js";
-import productApi from "./productRoutes.js";
+import { baseURL } from "@/constants/index.js";
+import createCommonApi from "./commonRoutes.js";
+import createUserApi from "./userRoutes.js";
+
+export const postWithFormData = async (api, url, formData) => {
+  if (!api || typeof api.post !== "function") {
+    throw new Error("Invalid Axios instance provided to postWithFormData.");
+  }
+  return api.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 const createBackendServer = (baseURL) => {
   const api = axios.create({
@@ -42,12 +50,9 @@ const createBackendServer = (baseURL) => {
   );
 
   return {
+    ...createCommonApi(api), // Common APIs
     ...createAuthApi(api), // Auth APIs
-    ...userApi(api), // User APIs
-    ...orderApi(api), // Order APIs
-    ...productApi(api), // Product APIs
-    ...createFaqApi(api), // FAQ APIs
-    ...createBlogApi(api), // Blog APIs
+    ...createUserApi(api), // User APIs
   };
 };
 

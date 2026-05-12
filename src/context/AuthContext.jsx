@@ -1,66 +1,68 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { baseURL } from "@/constants/data";
-import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
-import apis from "../api";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import apis from "@/api/index";
 
 // Create the AuthContext
 export const AuthContext = createContext();
 const initialStates = {
-  isAuthenticated: null,
+  isAuthenticated: false,
   user: null,
+  preferences: null,
   token: null,
+  splashLoading: true,
 };
 
 // Provide AuthContext to the app
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState(initialStates);
-  const [profile, setProfile] = useState(null);
-  const navigate = useNavigate();
 
-  const { mutate: loginApi, isPending } = useMutation({
-    mutationFn: (body) => apis.login(body),
-    onError: (error) => {
-      console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
-    },
-    onSuccess: ({ data }) => {
-      const { token, user } = data;
-      setAuthState({
-        isAuthenticated: true,
-        user,
-        token,
-      });
-      localStorage.setItem("token", token);
-      navigate("/home");
-      toast.success("Logged in successfully");
-    },
-  });
-
-  // Login method (API call + state update)
-  const login = async (email, password) => {
-    loginApi({ email, password, authType: "email" });
+  const fetchProfile = async (token) => {
+    setAuthState((prev) => ({ ...prev, splashLoading: true }));
+    try {
+      const { data } = await apis.fetchProfile();
+      if (data?.success) {
+        setAuthState((prev) => ({
+          ...prev,
+          token: token,
+          isAuthenticated: true,
+          user: data?.data?.user,
+          preferences: data?.data?.preferences,
+        }));
+      } else {
+        logout();
+      }
+    } catch (error) {
+      console.error("🚀 ~ fetchProfile ~ error:", error);
+    } finally {
+      setAuthState((prev) => ({ ...prev, splashLoading: false }));
+    }
   };
 
-  // Logout method (clear state and localStorage)
+  const login = (token) => {
+    localStorage.setItem("token", token);
+    // After setting token, we fetch the fresh profile
+    fetchProfile(token);
+  };
+
   const logout = () => {
-    setAuthState(initialStates);
     localStorage.removeItem("token");
-    navigate("/login");
-    toast.success("Logged out successfully");
+    setAuthState({ ...initialStates, splashLoading: false });
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchProfile(token);
+    } else {
+      setAuthState((prev) => ({ ...prev, splashLoading: false }));
+    }
+  }, []);
 
   // Context value
-  const value = {
-    login,
-    logout,
-    ...authState,
-  };
+  const value = { ...authState, login, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
+export const useAuthContext = () => {
   return useContext(AuthContext);
 };

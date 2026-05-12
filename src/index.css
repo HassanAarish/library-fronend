@@ -1,69 +1,23 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Be+Vietnam+Pro:wght@400;700&family=Poppins:wght@400;700&display=swap");
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-  font-family: "Outfit", sans-serif;
+/* Scrollbar Track */
+::-webkit-scrollbar {
+  width: 4px; /* Width of the scrollbar */
+  height: 6px; /* Height for horizontal scrollbar */
 }
 
-@layer components {
-  .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50;
-  }
-
-  .btn-primary {
-    @apply bg-primary text-white hover:bg-primary-600 focus:ring-primary-500;
-  }
-
-  .btn-secondary {
-    @apply bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-gray-500;
-  }
-}
-@layer utilities {
-  .marquee-container {
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-  }
-
-  .marquee {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: max-content; /* Ensures the container stretches as needed */
-    animation: marquee 15s linear infinite;
-    gap: 25px;
-  }
-
-  .marquee-item {
-    flex-shrink: 0;
-    margin-right: 1rem; /* Adjust spacing between images */
-  }
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%); /* Adjust based on the number of images */
-    }
-  }
+/* Circular Scrollbar Handle with Black and 30% Opacity */
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 50px; /* Makes the scrollbar thumb rounded */
 }
 
-.gradient-border-reward {
-  border-image: linear-gradient(
-    180deg,
-    rgba(20, 166, 85, 0) -3.63%,
-    #14a655 104.11%
-  );
-  border-image-slice: 1;
-  border-width: 3.5px;
-  border-style: solid;
-  border-radius: 20px;
+/* Handle on hover - Full Black */
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-primary) 80%, black);
+}
+
+/* Optional: Scrollbar Track */
+::-webkit-scrollbar-track {
+  background: transparent; /* Keeps the track invisible for a clean look */
 }
