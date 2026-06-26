@@ -33,7 +33,7 @@ const createBackendServer = (baseURL) => {
       }
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
   api.interceptors.response.use(
@@ -46,7 +46,7 @@ const createBackendServer = (baseURL) => {
         error?.response?.data?.message ||
         "Something went wrong. Please try again.";
       return Promise.reject(message);
-    }
+    },
   );
 
   return {

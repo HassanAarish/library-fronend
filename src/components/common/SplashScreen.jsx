@@ -1,37 +1,38 @@
-import React from "react";
-import Logo from "@/assets/logo.jpg";
+import { LuBookOpen } from "react-icons/lu";
+import AuroraBackground from "@/components/common/AuroraBackground";
 
 const SplashScreen = () => {
   return (
-    <div className="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center font-display overflow-hidden">
-      <div className="relative flex flex-col items-center">
-        {/* Animated Outer Rings */}
-        <div className="absolute w-32 h-32 border-4 border-primary/20 rounded-full animate-[ping_2s_infinite]"></div>
-        <div className="absolute w-32 h-32 border-2 border-primary/10 rounded-full animate-[ping_3s_infinite]"></div>
+    <div className="relative min-h-screen overflow-hidden font-display">
+      <AuroraBackground />
 
-        {/* Logo Container */}
-        <div className="relative z-10 bg-[#1a1a1a] p-6 rounded-full border border-white/10 shadow-2xl animate-in zoom-in duration-700">
-          <img
-            src={Logo}
-            alt="Library Logo"
-            className="w-20 h-20 object-contain animate-[pulse_2s_infinite]"
-          />
-        </div>
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center">
+        <div className="relative flex flex-col items-center">
+          {/* Animated rings */}
+          <div className="absolute h-32 w-32 rounded-full border-2 border-primary/20 animate-[ping_2s_infinite]" />
+          <div className="absolute h-32 w-32 rounded-full border border-accent/10 animate-[ping_3s_infinite]" />
 
-        {/* Text Animation */}
-        <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-          <h1 className="text-white text-2xl font-bold tracking-[0.3em] uppercase">
-            Library <span className="text-primary">Hub</span>
-          </h1>
-
-          {/* Loading Bar */}
-          <div className="mt-4 w-40 h-1 bg-white/5 rounded-full mx-auto overflow-hidden">
-            <div className="h-full bg-primary animate-[progress_2s_ease-in-out_infinite] w-full"></div>
+          {/* Logo */}
+          <div className="relative z-10 grid h-24 w-24 place-items-center rounded-3xl glass-strong glow-primary animate-float">
+            <span className="bg-aurora grid h-14 w-14 place-items-center rounded-2xl text-white shadow-lg">
+              <LuBookOpen className="text-2xl" />
+            </span>
           </div>
 
-          <p className="text-gray-500 text-[10px] mt-3 uppercase tracking-widest animate-pulse">
-            Establishing Secure Connection
-          </p>
+          {/* Text */}
+          <div className="mt-9 text-center animate-rise">
+            <h1 className="font-display text-2xl font-bold uppercase tracking-[0.3em] text-ink">
+              Library<span className="text-gradient">Hub</span>
+            </h1>
+
+            <div className="mx-auto mt-5 h-1 w-44 overflow-hidden rounded-full bg-white/8">
+              <div className="bg-aurora h-full w-full animate-[progress_1.8s_ease-in-out_infinite]" />
+            </div>
+
+            <p className="mt-3 text-[10px] uppercase tracking-widest text-faint animate-pulse">
+              Establishing secure connection
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -3,6 +3,9 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
@@ -18,8 +21,8 @@ export default defineConfig({
         short_name: "Library",
         start_url: "/",
         display: "standalone",
-        background_color: "#ffffff",
-        theme_color: "#ff0000",
+        background_color: "#0b0b14",
+        theme_color: "#8b5cf6",
         icons: [
           {
             src: "/icon-192x192.png",

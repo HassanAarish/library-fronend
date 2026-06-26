@@ -1,8 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect, useCallback } from "react";
 import apis from "@/api/index";
 
-// Create the AuthContext
-export const AuthContext = createContext();
+// 1. Create the AuthContext (Keep it internal to this file to satisfy Fast Refresh)
+const AuthContext = createContext();
+
 const initialStates = {
   isAuthenticated: false,
   user: null,
@@ -11,11 +12,12 @@ const initialStates = {
   splashLoading: true,
 };
 
-// Provide AuthContext to the app
+// 2. Provide AuthContext to the app (Main component export)
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState(initialStates);
 
-  const fetchProfile = async (token) => {
+  // Wrap fetchProfile in useCallback so it safe to include in dependency arrays
+  const fetchProfile = useCallback(async (token) => {
     setAuthState((prev) => ({ ...prev, splashLoading: true }));
     try {
       const { data } = await apis.fetchProfile();
@@ -28,18 +30,38 @@ export const AuthProvider = ({ children }) => {
           preferences: data?.data?.preferences,
         }));
       } else {
-        logout();
+        // Handle immediate logout cleanup
+        localStorage.removeItem("token");
+        setAuthState({ ...initialStates, splashLoading: false });
       }
     } catch (error) {
       console.error("🚀 ~ fetchProfile ~ error:", error);
+      localStorage.removeItem("token");
+      setAuthState({ ...initialStates, splashLoading: false });
     } finally {
       setAuthState((prev) => ({ ...prev, splashLoading: false }));
     }
-  };
+  }, []);
+
+  // Silently re-pull user + preferences (e.g. after a profile edit) WITHOUT
+  // toggling splashLoading, so the app doesn't flash the splash screen.
+  const refreshProfile = useCallback(async () => {
+    try {
+      const { data } = await apis.fetchProfile();
+      if (data?.success) {
+        setAuthState((prev) => ({
+          ...prev,
+          user: data?.data?.user,
+          preferences: data?.data?.preferences,
+        }));
+      }
+    } catch (error) {
+      console.error("🚀 ~ refreshProfile ~ error:", error);
+    }
+  }, []);
 
   const login = (token) => {
     localStorage.setItem("token", token);
-    // After setting token, we fetch the fresh profile
     fetchProfile(token);
   };
 
@@ -51,18 +73,19 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchProfile(token);
     } else {
       setAuthState((prev) => ({ ...prev, splashLoading: false }));
     }
-  }, []);
+  }, [fetchProfile]); // Added fetchProfile here safely because of useCallback
 
   // Context value
-  const value = { ...authState, login, logout };
+  const value = { ...authState, login, logout, refreshProfile };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuthContext = () => {
-  return useContext(AuthContext);
-};
+// 3. Custom Hook (Exported safely alongside the provider)
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuthContext = () => useContext(AuthContext);

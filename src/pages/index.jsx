@@ -1,2 +1,9 @@
 // AUTH SCREENS
-export { LoginPage, RegisterPage } from "./Auth";
+export {
+  LoginPage,
+  RegisterPage,
+  ForgotPasswordPage,
+  VerifyOtpPage,
+  ResetPasswordPage,
+  TwoFactorVerifyPage,
+} from "./Auth";

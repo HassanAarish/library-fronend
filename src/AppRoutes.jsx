@@ -13,14 +13,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route
-        exact
-        path="/*"
-        element={isAuthenticated ? <HomeLayout /> : <AuthLayout />}
-      />
-      {/* <Route path="/auth/*" element={<AuthLayout />} />
-      <Route path="/home/*" element={<HomeLayout />} />
-      <Route path="*" element={<Navigate to="/auth/login" replace />} /> */}
+      <Route exact path="/*" element={isAuthenticated ? <HomeLayout /> : <AuthLayout />} />
     </Routes>
   );
 }

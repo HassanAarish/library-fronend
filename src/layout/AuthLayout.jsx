@@ -1,16 +1,23 @@
-import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { LoginPage, RegisterPage } from "@/pages/index";
+import {
+  LoginPage,
+  RegisterPage,
+  ForgotPasswordPage,
+  VerifyOtpPage,
+  ResetPasswordPage,
+  TwoFactorVerifyPage,
+} from "@/pages/index";
 
 const AuthLayout = () => {
   return (
     <Routes>
-      <Route exact path="/*" element={<Navigate to={"/login"} replace />} />
-      <Route exact path="/login" element={<LoginPage />} />
-      <Route exact path="/signup" element={<RegisterPage />} />
-      {/* <Route exact path="/verify-code" element={<VerifyOtp />} />
-      <Route exact path="/forgot-password" element={<ForgotPassword />} />
-      <Route exact path="/reset-password/:token" element={<ResetPassword />} /> */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<RegisterPage />} />
+      <Route path="/verify-otp" element={<VerifyOtpPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+      <Route path="/two-factor" element={<TwoFactorVerifyPage />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };

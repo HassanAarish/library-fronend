@@ -1,5 +1,3 @@
-import React from "react";
-
 const PrimaryButton = ({
   label,
   type = "button",
@@ -15,8 +13,7 @@ const PrimaryButton = ({
 }) => {
   const variants = {
     primary: "bg-primary text-white hover:bg-primary/70 shadow-md",
-    secondary:
-      "bg-white/10 text-white border border-white/10 hover:bg-white/20",
+    secondary: "bg-white/10 text-white border border-white/10 hover:bg-white/20",
     danger: "bg-red-600 text-white hover:bg-red-700 shadow-md",
     success: "bg-emerald-600 text-white hover:bg-emerald-700 shadow-md",
     ghost: "bg-transparent text-gray-400 hover:text-white hover:bg-white/5",

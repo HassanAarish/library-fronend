@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 
 const Input = ({
@@ -10,13 +10,36 @@ const Input = ({
   id,
   type = "text", // Default type
   required = false,
+  options = [], // for type="select": [{ value, label }]
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isError = touched && error;
 
+  if (type === "checkbox") {
+    return (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <input
+          id={id}
+          type="checkbox"
+          className={`w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20 focus:ring-2 focus:ring-offset-0 outline-none transition-all cursor-pointer ${
+            isError ? "border-red-500/50" : ""
+          }`}
+          {...props}
+        />
+        {label && (
+          <label htmlFor={id} className="text-sm text-gray-300 cursor-pointer select-none">
+            {label}
+            {required && <span className="text-red-500 font-bold ml-1">*</span>}
+          </label>
+        )}
+        {isError && <span className="text-xs text-red-400 ml-auto">{error}</span>}
+      </div>
+    );
+  }
+
   const baseInputStyles = `
-    w-full bg-white/5 border rounded-xl py-3 text-white transition-all outline-none
+    w-full bg-white/5 border rounded-xl py-3 text-white transition-all outline-none scheme-dark
     ${Icon ? "pl-10" : "pl-4"} pr-12
     ${
       isError
@@ -29,11 +52,7 @@ const Input = ({
     switch (type) {
       case "textarea":
         return (
-          <textarea
-            id={id}
-            className={`${baseInputStyles} min-h-30 resize-none`}
-            {...props}
-          />
+          <textarea id={id} className={`${baseInputStyles} min-h-30 resize-none`} {...props} />
         );
 
       case "password":
@@ -51,19 +70,26 @@ const Input = ({
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors z-20 p-1"
             >
-              {showPassword ? (
-                <HiOutlineEyeOff size={20} />
-              ) : (
-                <HiOutlineEye size={20} />
-              )}
+              {showPassword ? <HiOutlineEyeOff size={20} /> : <HiOutlineEye size={20} />}
             </button>
           </div>
         );
 
-      default:
+      case "select":
         return (
-          <input id={id} type={type} className={baseInputStyles} {...props} />
+          <select id={id} className={baseInputStyles} {...props}>
+            {options.map((opt) => (
+              // The popup option list ignores the select's text color, so style
+              // each option explicitly (dark bg + light text) for visibility.
+              <option key={opt.value} value={opt.value} className="bg-elevated text-ink">
+                {opt.label}
+              </option>
+            ))}
+          </select>
         );
+
+      default:
+        return <input id={id} type={type} className={baseInputStyles} {...props} />;
     }
   };
 
